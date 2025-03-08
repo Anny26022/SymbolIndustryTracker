@@ -109,18 +109,30 @@ def main():
                         on_click=lambda: st.toast("Results copied to clipboard!"),
                         key="copy_button"
                     )
-                    # The proper way to set clipboard in Streamlit
+                    # Fixed clipboard functionality that won't remove content
                     st.markdown(
                         f"""
                         <div>
                         <script>
-                            const copyButton = document.querySelector('[data-testid="baseButton-secondary"]');
-                            if (copyButton) {{
-                                copyButton.addEventListener('click', function() {{
-                                    const text = `{formatted_output}`;
-                                    navigator.clipboard.writeText(text);
-                                }});
-                            }}
+                            document.addEventListener('DOMContentLoaded', function() {{
+                                setTimeout(function() {{
+                                    const copyButton = document.querySelector('[data-testid="baseButton-secondary"]');
+                                    if (copyButton) {{
+                                        copyButton.addEventListener('click', function(e) {{
+                                            const text = `{formatted_output}`;
+                                            navigator.clipboard.writeText(text).then(
+                                                function() {{
+                                                    console.log('Text copied to clipboard successfully');
+                                                }},
+                                                function(err) {{
+                                                    console.error('Could not copy text: ', err);
+                                                }}
+                                            );
+                                            e.stopPropagation();
+                                        }}, false);
+                                    }}
+                                }}, 1000);
+                            }});
                         </script>
                         </div>
                         """,
