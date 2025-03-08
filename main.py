@@ -110,38 +110,21 @@ def main():
             with col2:
                 st.subheader("TradingView Format")
                 if mapped_symbols:
-                    # Add option to choose copy format using session state to prevent refresh
-                    if 'copy_format' not in st.session_state:
-                        st.session_state.copy_format = "With industry categorization"
-                    
+                    # Simplify radio button for format selection
                     format_options = ["With industry categorization", "Flat list of symbols only"]
+                    copy_format = st.radio(
+                        "Copy format:",
+                        format_options,
+                        index=0,
+                        key="format_selection",
+                        horizontal=True
+                    )
                     
-                    # Create a container to prevent UI layout shifts
-                    format_container = st.container()
-                    
-                    with format_container:
-                        # Use a callback to update the session state without triggering a rerun
-                        def update_format():
-                            pass  # The value is already updated in session_state
-                            
-                        selected_format = st.radio(
-                            "Copy format:",
-                            format_options,
-                            index=0 if st.session_state.copy_format == "With industry categorization" else 1,
-                            key="format_selection",
-                            on_change=update_format,
-                            horizontal=True
-                        )
-                    
-                    # Update session state with the selected format
-                    st.session_state.copy_format = selected_format
-                    copy_format = selected_format
-                    
-                    # Get formatted outputs
+                    # Get formatted outputs based on the current selection
                     categorized_output = mapper.format_tv_output(mapped_symbols)
                     flat_output = mapper.format_flat_output(mapped_symbols)
                     
-                    # Display selected format
+                    # Directly use the radio button value to determine output
                     selected_output = categorized_output if copy_format == "With industry categorization" else flat_output
                     
                     # Display the code directly for visibility
