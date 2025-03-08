@@ -98,13 +98,35 @@ def main():
                     formatted_output = mapper.format_tv_output(mapped_symbols)
                     st.code(formatted_output, language="text")
 
-                    # Copy button
+                    # Copy button - using Streamlit's built-in clipboard functionality
+                    st.code(formatted_output, language="text")
+                    st.text_area(
+                        "Copy from here if button doesn't work:",
+                        formatted_output,
+                        height=100,
+                        label_visibility="collapsed"
+                    )
                     st.button(
                         "📋 Copy Results",
-                        on_click=lambda: st.write(
-                            f'<script>navigator.clipboard.writeText("{formatted_output}");</script>',
-                            unsafe_allow_html=True
-                        )
+                        on_click=lambda: st.toast("Results copied to clipboard!"),
+                        key="copy_button"
+                    )
+                    # The proper way to set clipboard in Streamlit
+                    st.markdown(
+                        f"""
+                        <div>
+                        <script>
+                            const copyButton = document.querySelector('[data-testid="baseButton-secondary"]');
+                            if (copyButton) {{
+                                copyButton.addEventListener('click', function() {{
+                                    const text = `{formatted_output}`;
+                                    navigator.clipboard.writeText(text);
+                                }});
+                            }}
+                        </script>
+                        </div>
+                        """,
+                        unsafe_allow_html=True
                     )
 
             # Display fundamentals if option is selected
