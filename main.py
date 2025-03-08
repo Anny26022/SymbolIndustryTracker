@@ -89,6 +89,15 @@ def main():
                         hide_index=True,
                         use_container_width=True
                     )
+                    
+                    # Add download button for search results
+                    csv = results_df.to_csv(index=False)
+                    st.download_button(
+                        label="📥 Download Results",
+                        data=csv,
+                        file_name="symbol_industry_mapping.csv",
+                        mime="text/csv"
+                    )
                 else:
                     st.warning("No valid symbols found.")
 
