@@ -98,6 +98,47 @@ class IndustryMapper:
         """Get list of all available industries in the database."""
         return self.available_industries
 
+    def get_fundamentals_data(self, symbols: List[str]) -> pd.DataFrame:
+        """Get fundamentals data for the given symbols."""
+        try:
+            # Load results calendar data
+            results_df = pd.read_csv('attached_assets/Results Calendar.csv')
+            
+            # Convert all symbols to uppercase
+            results_df['Stock Name'] = results_df['Stock Name'].str.upper()
+            symbols = [symbol.upper() for symbol in symbols]
+            
+            # Filter for the requested symbols
+            filtered_df = results_df[results_df['Stock Name'].isin(symbols)]
+            
+            if filtered_df.empty:
+                return pd.DataFrame()
+            
+            # Rename columns for better readability
+            column_mapping = {
+                'Stock Name': 'Symbol',
+                'Quarterly Results Date': 'Results Date',
+                'QoQ % Net Profit Latest': 'QoQ Net Profit %',
+                'QoQ % EPS Latest': 'QoQ EPS %',
+                'YoY% EPS Latest': 'YoY EPS %',
+                'QoQ % Sales Latest': 'QoQ Sales %',
+                'YoY % Sales Latest': 'YoY Sales %'
+            }
+            
+            filtered_df = filtered_df.rename(columns=column_mapping)
+            
+            # Convert date format if needed (DD/MM/YYYY to more readable format)
+            try:
+                filtered_df['Results Date'] = pd.to_datetime(filtered_df['Results Date'], format='%d/%m/%Y')
+                filtered_df['Results Date'] = filtered_df['Results Date'].dt.strftime('%d %b %Y')
+            except:
+                pass  # Keep original format if conversion fails
+                
+            return filtered_df
+        except Exception as e:
+            print(f"Error fetching fundamentals data: {str(e)}")
+            return pd.DataFrame()
+
     def get_database_stats(self) -> Dict[str, int]:
         """Get statistics about the mapping database."""
         return {

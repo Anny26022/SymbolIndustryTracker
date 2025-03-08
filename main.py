@@ -22,8 +22,10 @@ def main():
         1. Enter up to 900 stock symbols in the text area below
         2. Symbols can be separated by commas or newlines
         3. You can use NSE symbols with or without the "NSE:" prefix (e.g., both "RELIANCE" and "NSE:RELIANCE" work)
-        4. Click 'Process Symbols' to get industry mappings
-        5. Use the 'Copy Results' button to copy formatted output with NSE prefix added automatically
+        4. Check "Show fundamentals and result dates" to view quarterly results dates and financial metrics
+        5. Click 'Process Symbols' to get industry mappings and fundamental data
+        6. Use the 'Copy Results' button to copy formatted output with NSE prefix added automatically
+        7. Download the fundamentals data as CSV if needed
         """)
 
     try:
@@ -57,6 +59,10 @@ def main():
         help="Example: RELIANCE, HDFCBANK, TCS or NSE:RELIANCE, NSE:HDFCBANK, NSE:TCS"
     )
 
+    # Add option to show fundamentals
+    show_fundamentals = st.checkbox("Show fundamentals and result dates", value=False,
+                                   help="Display quarterly results date and fundamental data for the symbols")
+
     # Process button
     if st.button("Process Symbols", type="primary"):
         if not symbols_input.strip():
@@ -65,6 +71,7 @@ def main():
 
         try:
             mapped_symbols, invalid_symbols = mapper.map_symbols(symbols_input)
+            symbol_list = list(mapped_symbols.keys())
 
             # Display results in columns
             col1, col2 = st.columns(2)
@@ -99,6 +106,27 @@ def main():
                             unsafe_allow_html=True
                         )
                     )
+
+            # Display fundamentals if option is selected
+            if show_fundamentals and mapped_symbols:
+                st.subheader("Fundamentals & Results Calendar")
+                fundamentals_df = mapper.get_fundamentals_data(symbol_list)
+                if not fundamentals_df.empty:
+                    st.dataframe(
+                        fundamentals_df,
+                        hide_index=True,
+                        use_container_width=True
+                    )
+                    # Add download button for fundamentals data
+                    csv = fundamentals_df.to_csv(index=False)
+                    st.download_button(
+                        label="📥 Download Fundamentals Data",
+                        data=csv,
+                        file_name="fundamentals_data.csv",
+                        mime="text/csv"
+                    )
+                else:
+                    st.info("No fundamental data found for the selected symbols.")
 
             # Display invalid symbols if any
             if invalid_symbols:
