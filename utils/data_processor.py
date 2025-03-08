@@ -63,8 +63,8 @@ class IndustryMapper:
         """Map symbols to industries and return mapping and invalid symbols."""
         clean_symbol_list = self.clean_symbols(symbols)
 
-        if len(clean_symbol_list) > 900:
-            raise ValueError("Maximum 900 symbols allowed per batch")
+        if len(clean_symbol_list) > 999:
+            raise ValueError("Maximum 999 symbols allowed per batch")
 
         mapped_symbols = {}
         invalid_symbols = []

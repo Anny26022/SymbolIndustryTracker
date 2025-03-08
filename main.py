@@ -19,7 +19,7 @@ def main():
     # Instructions
     with st.expander("📖 Instructions", expanded=True):
         st.markdown("""
-        1. Enter up to 900 stock symbols in the text area below
+        1. Enter up to 999 stock symbols in the text area below
         2. Symbols can be separated by commas or newlines
         3. You can use NSE symbols with or without the "NSE:" prefix (e.g., both "RELIANCE" and "NSE:RELIANCE" work)
         4. Check "Show fundamentals and result dates" to view quarterly results dates and financial metrics
@@ -54,7 +54,7 @@ def main():
 
     # Input area
     symbols_input = st.text_area(
-        "Enter stock symbols (max 900, separated by commas or newlines):",
+        "Enter stock symbols (max 999, separated by commas or newlines):",
         height=200,
         help="Example: RELIANCE, HDFCBANK, TCS or NSE:RELIANCE, NSE:HDFCBANK, NSE:TCS"
     )
@@ -180,7 +180,7 @@ def main():
     st.markdown(
         """
         <div style='text-align: center'>
-            <p>Built with Streamlit • Process up to 900 symbols at once</p>
+            <p>Built with Streamlit • Process up to 999 symbols at once</p>
         </div>
         """,
         unsafe_allow_html=True
