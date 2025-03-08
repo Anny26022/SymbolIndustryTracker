@@ -97,25 +97,41 @@ def main():
                 if mapped_symbols:
                     formatted_output = mapper.format_tv_output(mapped_symbols)
                     
-                    # Display the code directly without JavaScript copy functionalities
+                    # Display the code directly for visibility
                     st.code(formatted_output, language="text")
                     
-                    # Simpler copy approach
-                    copy_container = st.container()
-                    col1, col2 = copy_container.columns([3, 1])
-                    
-                    with col1:
-                        copy_text = st.text_area(
-                            "Copy from here:",
-                            formatted_output,
-                            height=100,
-                            key="copy_area"
-                        )
-                    
-                    with col2:
-                        st.markdown("<br>", unsafe_allow_html=True)  # Add spacing
-                        if st.button("📋 Copy Results", key="manual_copy"):
-                            st.toast("Select and copy the text from the box on the left")
+                    # Create a non-interactive display with copy button
+                    st.markdown(
+                        f"""
+                        <div style="position: relative;">
+                            <pre style="background-color: #f0f2f6; padding: 10px; border-radius: 5px; white-space: pre-wrap; overflow-x: auto;">{formatted_output}</pre>
+                            <button id="copyButton" style="position: absolute; top: 10px; right: 10px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; padding: 6px 12px; cursor: pointer;">
+                                📋 Copy
+                            </button>
+                        </div>
+                        <script>
+                            const copyButton = document.getElementById('copyButton');
+                            copyButton.addEventListener('click', function(e) {{
+                                const text = `{formatted_output}`;
+                                navigator.clipboard.writeText(text)
+                                    .then(() => {{
+                                        // Visual feedback without page refresh
+                                        this.textContent = "✓ Copied!";
+                                        setTimeout(() => {{
+                                            this.textContent = "📋 Copy";
+                                        }}, 2000);
+                                    }})
+                                    .catch(err => console.error('Copy failed:', err));
+                                    
+                                // Prevent default button behavior
+                                e.preventDefault();
+                                e.stopPropagation();
+                                return false;
+                            }});
+                        </script>
+                        """,
+                        unsafe_allow_html=True
+                    )
 
             # Display fundamentals if option is selected
             if show_fundamentals and mapped_symbols:
