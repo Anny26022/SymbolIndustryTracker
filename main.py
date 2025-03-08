@@ -130,38 +130,27 @@ def main():
                     # Display the code directly for visibility
                     st.code(selected_output, language="text")
                     
-                    # Create a non-interactive display with copy button
-                    st.markdown(
-                        f"""
-                        <div style="position: relative;">
-                            <pre style="background-color: #f0f2f6; padding: 10px; border-radius: 5px; white-space: pre-wrap; overflow-x: auto;">{selected_output}</pre>
-                            <button id="copyButton" style="position: absolute; top: 10px; right: 10px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; padding: 6px 12px; cursor: pointer;">
-                                📋
-                            </button>
-                        </div>
-                        <script>
-                            const copyButton = document.getElementById('copyButton');
-                            copyButton.addEventListener('click', function(e) {{
-                                const text = `{selected_output}`;
-                                navigator.clipboard.writeText(text)
-                                    .then(() => {{
-                                        // Visual feedback without page refresh
-                                        this.textContent = "✓";
-                                        setTimeout(() => {{
-                                            this.textContent = "📋";
-                                        }}, 2000);
-                                    }})
-                                    .catch(err => console.error('Copy failed:', err));
-                                    
-                                // Prevent default button behavior
-                                e.preventDefault();
-                                e.stopPropagation();
-                                return false;
-                            }});
-                        </script>
-                        """,
-                        unsafe_allow_html=True
-                    )
+                    # Use a Streamlit button for copying instead of JavaScript
+                    if st.button("📋 Copy to Clipboard", key="copy_button"):
+                        # Using st.text_area and javascript to copy to clipboard
+                        st.markdown(
+                            f"""
+                            <script>
+                                navigator.clipboard.writeText(`{selected_output}`);
+                            </script>
+                            """, 
+                            unsafe_allow_html=True
+                        )
+                        st.success("Copied to clipboard!")
+                    
+                    # Also provide the text in an expandable area that can be manually copied
+                    with st.expander("Show full text for manual copy", expanded=False):
+                        st.text_area(
+                            "Copy manually if button doesn't work:",
+                            value=selected_output,
+                            height=150,
+                            key="manual_copy"
+                        )
 
             # Display fundamentals if option is selected
             if show_fundamentals and mapped_symbols:
