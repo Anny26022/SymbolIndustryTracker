@@ -68,10 +68,10 @@ class IndustryMapper:
         return mapped_symbols, invalid_symbols
 
     def format_tv_output(self, mapped_symbols: Dict[str, str]) -> str:
-        """Format the output in TradingView compatible format."""
+        """Format the output in TradingView compatible format with NSE prefix."""
         formatted_lines = []
         for symbol, industry in mapped_symbols.items():
-            formatted_lines.append(f"{symbol}:{industry}")
+            formatted_lines.append(f"NSE:{symbol}:{industry}")
         return "\n".join(formatted_lines)
 
     def get_available_industries(self) -> List[str]:
