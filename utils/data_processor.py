@@ -16,8 +16,12 @@ class IndustryMapper:
             industry_categories = pd.read_csv('attached_assets/Industry Analytics.csv', header=None)
             self.available_industries = sorted(industry_categories[0].unique())
 
-            # Load symbol mappings
-            self.mapping_df = pd.read_csv('data/industry_mapping.csv')
+            # Load symbol mappings from the complete dataset
+            stock_data = pd.read_csv('attached_assets/Basic RS Setup (4).csv')
+            self.mapping_df = pd.DataFrame({
+                'symbol': stock_data['Stock Name'],
+                'industry': stock_data['Basic Industry']
+            })
 
             # Validate industries in mapping against available categories
             invalid_industries = set(self.mapping_df['industry']) - set(self.available_industries)
