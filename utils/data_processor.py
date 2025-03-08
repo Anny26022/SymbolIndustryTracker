@@ -85,8 +85,10 @@ class IndustryMapper:
             industry_groups[industry].append(symbol)
 
         # Format output with industry grouping
+        # Sort industries by number of symbols in descending order
         formatted_lines = []
-        for industry, symbols in sorted(industry_groups.items()):
+        sorted_industries = sorted(industry_groups.items(), key=lambda x: len(x[1]), reverse=True)
+        for industry, symbols in sorted_industries:
             symbol_count = len(symbols)
             nse_symbols = [f"NSE:{symbol}" for symbol in sorted(symbols)]
             formatted_line = f"###{industry}({symbol_count}),{','.join(nse_symbols)}"

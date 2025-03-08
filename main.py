@@ -84,6 +84,12 @@ def main():
                         list(mapped_symbols.items()),
                         columns=['Symbol', 'Industry']
                     )
+                    
+                    # Sort by industry frequency
+                    industry_counts = results_df['Industry'].value_counts()
+                    results_df['IndustryCount'] = results_df['Industry'].map(industry_counts)
+                    results_df = results_df.sort_values('IndustryCount', ascending=False)
+                    results_df = results_df.drop(columns=['IndustryCount'])
                     st.dataframe(
                         results_df,
                         hide_index=True,
