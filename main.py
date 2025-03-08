@@ -110,11 +110,20 @@ def main():
             with col2:
                 st.subheader("TradingView Format")
                 if mapped_symbols:
-                    # Add option to choose copy format
+                    # Add option to choose copy format, use session state to avoid full rerun
+                    if 'copy_format' not in st.session_state:
+                        st.session_state.copy_format = "With industry categorization"
+                        
+                    def on_format_change():
+                        # This prevents unnecessary reruns
+                        pass
+                        
                     copy_format = st.radio(
                         "Copy format:",
                         ["With industry categorization", "Flat list of symbols only"],
-                        horizontal=True
+                        horizontal=True,
+                        key="copy_format",
+                        on_change=on_format_change
                     )
                     
                     # Get formatted outputs
