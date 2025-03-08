@@ -19,43 +19,26 @@ def main():
     # Instructions
     with st.expander("📖 Instructions", expanded=True):
         st.markdown("""
-        1. First, upload your industry mapping database (CSV file)
-        2. Enter up to 900 stock symbols in the text area
-        3. Symbols can be separated by commas or newlines
-        4. Click 'Process Symbols' to get industry mappings
-        5. Use the 'Copy Results' button to copy formatted output
-
-        Required CSV format:
-        - Must have 'symbol' and 'industry' columns
-        - Example:
-          ```
-          symbol,industry
-          AAPL,Technology
-          MSFT,Technology
-          ```
+        1. Enter up to 900 stock symbols in the text area below
+        2. Symbols can be separated by commas or newlines
+        3. Click 'Process Symbols' to get industry mappings
+        4. Use the 'Copy Results' button to copy formatted output
         """)
 
-    mapper = get_mapper()
+    try:
+        mapper = get_mapper()
+        stats = mapper.get_database_stats()
 
-    # File uploader for database
-    uploaded_file = st.file_uploader(
-        "Upload industry mapping database (CSV)",
-        type=['csv'],
-        help="Upload a CSV file with 'symbol' and 'industry' columns"
-    )
+        # Display database statistics
+        st.info(f"📊 Database loaded with {stats['total_symbols']:,} symbols across {stats['total_industries']} industries")
 
-    # Handle uploaded file
-    if uploaded_file is not None:
-        try:
-            num_symbols, industries = mapper.load_custom_mapping(uploaded_file.getvalue())
-            st.success(f"✅ Loaded {num_symbols} symbols across {len(industries)} industries")
+        # Display available industries
+        with st.expander("🏢 Available Industries"):
+            st.write(mapper.get_available_industries())
 
-            # Display available industries
-            with st.expander("🏢 Available Industries"):
-                st.write(sorted(industries))
-        except ValueError as e:
-            st.error(f"❌ Error loading file: {str(e)}")
-            st.stop()
+    except Exception as e:
+        st.error(f"❌ Error loading industry database: {str(e)}")
+        st.stop()
 
     # Input area
     symbols_input = st.text_area(

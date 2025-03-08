@@ -1,50 +1,26 @@
 import pandas as pd
 from typing import List, Tuple, Dict
-import io
 
 class IndustryMapper:
     def __init__(self):
-        # Initialize with empty mapping
-        self.mapping_df = pd.DataFrame()
-        self.mapping_dict = {}
-
-        # Try to load default mapping if available
+        """Initialize the mapper with the permanent backend database."""
         try:
-            self.load_default_mapping()
-        except Exception:
-            pass
-
-    def load_default_mapping(self):
-        """Load the default industry mapping database."""
-        self.mapping_df = pd.read_csv('data/industry_mapping.csv')
-        self.update_mapping_dict()
-
-    def load_custom_mapping(self, file_content):
-        """Load a custom industry mapping from uploaded file."""
-        try:
-            # Read the uploaded file
-            df = pd.read_csv(io.StringIO(file_content.decode('utf-8')))
-
-            # Validate the CSV format
-            required_columns = ['symbol', 'industry']
-            if not all(col in df.columns for col in required_columns):
-                raise ValueError("CSV must contain 'symbol' and 'industry' columns")
-
-            # Update the mapping
-            self.mapping_df = df
-            self.update_mapping_dict()
-
-            return len(self.mapping_df), list(self.mapping_df['industry'].unique())
-
+            self.load_database()
         except Exception as e:
-            raise ValueError(f"Error loading custom mapping: {str(e)}")
+            raise Exception(f"Failed to load industry mapping database: {str(e)}")
 
-    def update_mapping_dict(self):
-        """Update the internal mapping dictionary."""
-        self.mapping_dict = dict(zip(
-            self.mapping_df['symbol'].str.upper(),
-            self.mapping_df['industry']
-        ))
+    def load_database(self):
+        """Load the permanent industry mapping database."""
+        try:
+            self.mapping_df = pd.read_csv('data/industry_mapping.csv')
+            self.mapping_dict = dict(zip(
+                self.mapping_df['symbol'].str.upper(),
+                self.mapping_df['industry']
+            ))
+        except FileNotFoundError:
+            raise Exception("Industry mapping database not found")
+        except Exception as e:
+            raise Exception(f"Error reading industry database: {str(e)}")
 
     def clean_symbols(self, symbols: str) -> List[str]:
         """Clean and validate input symbols."""
@@ -60,9 +36,6 @@ class IndustryMapper:
 
     def map_symbols(self, symbols: str) -> Tuple[Dict[str, str], List[str]]:
         """Map symbols to industries and return mapping and invalid symbols."""
-        if not self.mapping_dict:
-            raise ValueError("No industry mapping database loaded. Please upload a mapping file.")
-
         clean_symbol_list = self.clean_symbols(symbols)
 
         if len(clean_symbol_list) > 900:
@@ -85,3 +58,14 @@ class IndustryMapper:
         for symbol, industry in mapped_symbols.items():
             formatted_lines.append(f"{symbol}:{industry}")
         return "\n".join(formatted_lines)
+
+    def get_available_industries(self) -> List[str]:
+        """Get list of all available industries in the database."""
+        return sorted(self.mapping_df['industry'].unique())
+
+    def get_database_stats(self) -> Dict[str, int]:
+        """Get statistics about the mapping database."""
+        return {
+            'total_symbols': len(self.mapping_df),
+            'total_industries': len(self.get_available_industries())
+        }
