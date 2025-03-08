@@ -21,8 +21,9 @@ def main():
         st.markdown("""
         1. Enter up to 900 stock symbols in the text area below
         2. Symbols can be separated by commas or newlines
-        3. Click 'Process Symbols' to get industry mappings
-        4. Use the 'Copy Results' button to copy formatted output
+        3. You can use NSE symbols with or without the "NSE:" prefix (e.g., both "RELIANCE" and "NSE:RELIANCE" work)
+        4. Click 'Process Symbols' to get industry mappings
+        5. Use the 'Copy Results' button to copy formatted output with NSE prefix added automatically
         """)
 
     try:
@@ -53,7 +54,7 @@ def main():
     symbols_input = st.text_area(
         "Enter stock symbols (max 900, separated by commas or newlines):",
         height=200,
-        help="Example: AAPL, MSFT, GOOGL"
+        help="Example: RELIANCE, HDFCBANK, TCS or NSE:RELIANCE, NSE:HDFCBANK, NSE:TCS"
     )
 
     # Process button

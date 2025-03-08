@@ -42,7 +42,16 @@ class IndustryMapper:
         """Clean and validate input symbols."""
         # Split and clean symbols
         symbols = symbols.replace('\n', ',').replace(';', ',')
-        symbol_list = [s.strip().upper() for s in symbols.split(',') if s.strip()]
+        
+        # Process symbols, removing any "NSE:" prefix if present
+        symbol_list = []
+        for s in symbols.split(','):
+            if s.strip():
+                # Remove NSE: prefix if present
+                clean_symbol = s.strip().upper()
+                if clean_symbol.startswith("NSE:"):
+                    clean_symbol = clean_symbol[4:]
+                symbol_list.append(clean_symbol)
 
         # Remove duplicates while preserving order
         seen = set()
