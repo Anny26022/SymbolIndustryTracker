@@ -1,5 +1,6 @@
 import pandas as pd
 from typing import List, Tuple, Dict
+from collections import defaultdict
 
 class IndustryMapper:
     def __init__(self):
@@ -68,11 +69,21 @@ class IndustryMapper:
         return mapped_symbols, invalid_symbols
 
     def format_tv_output(self, mapped_symbols: Dict[str, str]) -> str:
-        """Format the output in TradingView compatible format with NSE prefix."""
-        formatted_lines = []
+        """Format the output in TradingView compatible format with industry grouping."""
+        # Group symbols by industry
+        industry_groups = defaultdict(list)
         for symbol, industry in mapped_symbols.items():
-            formatted_lines.append(f"NSE:{symbol}:{industry}")
-        return "\n".join(formatted_lines)
+            industry_groups[industry].append(symbol)
+
+        # Format output with industry grouping
+        formatted_lines = []
+        for industry, symbols in sorted(industry_groups.items()):
+            symbol_count = len(symbols)
+            nse_symbols = [f"NSE:{symbol}" for symbol in sorted(symbols)]
+            formatted_line = f"###{industry}({symbol_count}),{','.join(nse_symbols)}"
+            formatted_lines.append(formatted_line)
+
+        return ",".join(formatted_lines)
 
     def get_available_industries(self) -> List[str]:
         """Get list of all available industries in the database."""
