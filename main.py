@@ -106,7 +106,7 @@ def main():
                         <div style="position: relative;">
                             <pre style="background-color: #f0f2f6; padding: 10px; border-radius: 5px; white-space: pre-wrap; overflow-x: auto;">{formatted_output}</pre>
                             <button id="copyButton" style="position: absolute; top: 10px; right: 10px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; padding: 6px 12px; cursor: pointer;">
-                                📋 Copy
+                                📋
                             </button>
                         </div>
                         <script>
@@ -116,9 +116,9 @@ def main():
                                 navigator.clipboard.writeText(text)
                                     .then(() => {{
                                         // Visual feedback without page refresh
-                                        this.textContent = "✓ Copied!";
+                                        this.textContent = "✓";
                                         setTimeout(() => {{
-                                            this.textContent = "📋 Copy";
+                                            this.textContent = "📋";
                                         }}, 2000);
                                     }})
                                     .catch(err => console.error('Copy failed:', err));
