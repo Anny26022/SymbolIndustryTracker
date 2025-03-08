@@ -110,58 +110,32 @@ def main():
             with col2:
                 st.subheader("TradingView Format")
                 if mapped_symbols:
-                    # Add option to choose copy format
-                    # Get format from query parameters if available
-                    query_params = st.experimental_get_query_params()
-                    default_index = 0
-                    if "format" in query_params and query_params["format"][0] == "flat":
-                        default_index = 1
+                    # Add option to choose copy format using session state to prevent refresh
+                    if 'copy_format' not in st.session_state:
+                        st.session_state.copy_format = "With industry categorization"
                     
                     format_options = ["With industry categorization", "Flat list of symbols only"]
-                    copy_format = format_options[default_index]
                     
-                    # Create columns for better layout
-                    format_col1, format_col2 = st.columns([3, 1])
+                    # Create a container to prevent UI layout shifts
+                    format_container = st.container()
                     
-                    with format_col1:
+                    with format_container:
+                        # Use a callback to update the session state without triggering a rerun
+                        def update_format():
+                            pass  # The value is already updated in session_state
+                            
                         selected_format = st.radio(
                             "Copy format:",
                             format_options,
-                            index=default_index,
-                            horizontal=True,
-                            label_visibility="visible"
+                            index=0 if st.session_state.copy_format == "With industry categorization" else 1,
+                            key="format_selection",
+                            on_change=update_format,
+                            horizontal=True
                         )
                     
-                    with format_col2:
-                        # Add a hidden element to avoid UI refresh
-                        st.write("")
-                        
-                    # Update selected format
+                    # Update session state with the selected format
+                    st.session_state.copy_format = selected_format
                     copy_format = selected_format
-                    
-                    # Update query parameter without triggering a full rerun
-                    if copy_format == "Flat list of symbols only" and "format" not in query_params:
-                        st.markdown(
-                            """
-                            <script>
-                                const url = new URL(window.location);
-                                url.searchParams.set('format', 'flat');
-                                window.history.pushState({}, '', url);
-                            </script>
-                            """,
-                            unsafe_allow_html=True
-                        )
-                    elif copy_format == "With industry categorization" and "format" in query_params:
-                        st.markdown(
-                            """
-                            <script>
-                                const url = new URL(window.location);
-                                url.searchParams.delete('format');
-                                window.history.pushState({}, '', url);
-                            </script>
-                            """,
-                            unsafe_allow_html=True
-                        )
                     
                     # Get formatted outputs
                     categorized_output = mapper.format_tv_output(mapped_symbols)
