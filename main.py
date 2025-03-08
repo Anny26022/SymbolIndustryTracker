@@ -97,47 +97,25 @@ def main():
                 if mapped_symbols:
                     formatted_output = mapper.format_tv_output(mapped_symbols)
                     
-                    # Copy button - using Streamlit's built-in clipboard functionality
-                    st.text_area(
-                        "Copy from here if button doesn't work:",
-                        formatted_output,
-                        height=100,
-                        label_visibility="collapsed"
-                    )
-                    st.button(
-                        "📋 Copy Results",
-                        on_click=lambda: st.toast("Results copied to clipboard!"),
-                        key="copy_button"
-                    )
-                    # Fixed clipboard functionality that won't remove content
-                    st.markdown(
-                        f"""
-                        <div>
-                        <script>
-                            document.addEventListener('DOMContentLoaded', function() {{
-                                setTimeout(function() {{
-                                    const copyButton = document.querySelector('[data-testid="baseButton-secondary"]');
-                                    if (copyButton) {{
-                                        copyButton.addEventListener('click', function(e) {{
-                                            const text = `{formatted_output}`;
-                                            navigator.clipboard.writeText(text).then(
-                                                function() {{
-                                                    console.log('Text copied to clipboard successfully');
-                                                }},
-                                                function(err) {{
-                                                    console.error('Could not copy text: ', err);
-                                                }}
-                                            );
-                                            e.stopPropagation();
-                                        }}, false);
-                                    }}
-                                }}, 1000);
-                            }});
-                        </script>
-                        </div>
-                        """,
-                        unsafe_allow_html=True
-                    )
+                    # Display the code directly without JavaScript copy functionalities
+                    st.code(formatted_output, language="text")
+                    
+                    # Simpler copy approach
+                    copy_container = st.container()
+                    col1, col2 = copy_container.columns([3, 1])
+                    
+                    with col1:
+                        copy_text = st.text_area(
+                            "Copy from here:",
+                            formatted_output,
+                            height=100,
+                            key="copy_area"
+                        )
+                    
+                    with col2:
+                        st.markdown("<br>", unsafe_allow_html=True)  # Add spacing
+                        if st.button("📋 Copy Results", key="manual_copy"):
+                            st.toast("Select and copy the text from the box on the left")
 
             # Display fundamentals if option is selected
             if show_fundamentals and mapped_symbols:
