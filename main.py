@@ -15,15 +15,47 @@ def main():
     )
 
     st.title("📈 Stock Symbol Industry Mapper")
-    
+
     # Instructions
-    with st.expander("📖 Instructions", expanded=False):
+    with st.expander("📖 Instructions", expanded=True):
         st.markdown("""
-        1. Enter up to 900 stock symbols in the text area below
-        2. Symbols can be separated by commas or newlines
-        3. Click 'Process Symbols' to get industry mappings
-        4. Use the 'Copy Results' button to copy formatted output
+        1. First, upload your industry mapping database (CSV file)
+        2. Enter up to 900 stock symbols in the text area
+        3. Symbols can be separated by commas or newlines
+        4. Click 'Process Symbols' to get industry mappings
+        5. Use the 'Copy Results' button to copy formatted output
+
+        Required CSV format:
+        - Must have 'symbol' and 'industry' columns
+        - Example:
+          ```
+          symbol,industry
+          AAPL,Technology
+          MSFT,Technology
+          ```
         """)
+
+    mapper = get_mapper()
+
+    # File uploader for database
+    uploaded_file = st.file_uploader(
+        "Upload industry mapping database (CSV)",
+        type=['csv'],
+        help="Upload a CSV file with 'symbol' and 'industry' columns"
+    )
+
+    # Handle uploaded file
+    if uploaded_file is not None:
+        try:
+            num_symbols, industries = mapper.load_custom_mapping(uploaded_file.getvalue())
+            st.success(f"✅ Loaded {num_symbols} symbols across {len(industries)} industries")
+
+            # Display available industries
+            with st.expander("🏢 Available Industries"):
+                st.write(sorted(industries))
+        except ValueError as e:
+            st.error(f"❌ Error loading file: {str(e)}")
+            st.stop()
 
     # Input area
     symbols_input = st.text_area(
@@ -39,7 +71,6 @@ def main():
             return
 
         try:
-            mapper = get_mapper()
             mapped_symbols, invalid_symbols = mapper.map_symbols(symbols_input)
 
             # Display results in columns
@@ -66,7 +97,7 @@ def main():
                 if mapped_symbols:
                     formatted_output = mapper.format_tv_output(mapped_symbols)
                     st.code(formatted_output, language="text")
-                    
+
                     # Copy button
                     st.button(
                         "📋 Copy Results",
