@@ -30,11 +30,20 @@ def main():
         stats = mapper.get_database_stats()
 
         # Display database statistics
-        st.info(f"📊 Database loaded with {stats['total_symbols']:,} symbols across {stats['total_industries']} industries")
+        st.info(
+            f"📊 Database loaded with {stats['total_symbols']:,} symbols mapped to "
+            f"{stats['mapped_industries']} industries out of {stats['total_industries']} "
+            f"available industry categories"
+        )
 
         # Display available industries
-        with st.expander("🏢 Available Industries"):
-            st.write(mapper.get_available_industries())
+        with st.expander("🏢 Available Industry Categories"):
+            industries = mapper.get_available_industries()
+            # Display in columns for better readability
+            cols = st.columns(3)
+            industries_per_col = len(industries) // 3 + 1
+            for i, industry in enumerate(industries):
+                cols[i // industries_per_col].text(f"• {industry}")
 
     except Exception as e:
         st.error(f"❌ Error loading industry database: {str(e)}")

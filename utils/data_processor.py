@@ -12,7 +12,18 @@ class IndustryMapper:
     def load_database(self):
         """Load the permanent industry mapping database."""
         try:
+            # Load industry categories
+            industry_categories = pd.read_csv('attached_assets/Industry Analytics.csv', header=None)
+            self.available_industries = sorted(industry_categories[0].unique())
+
+            # Load symbol mappings
             self.mapping_df = pd.read_csv('data/industry_mapping.csv')
+
+            # Validate industries in mapping against available categories
+            invalid_industries = set(self.mapping_df['industry']) - set(self.available_industries)
+            if invalid_industries:
+                raise ValueError(f"Invalid industries in mapping: {invalid_industries}")
+
             self.mapping_dict = dict(zip(
                 self.mapping_df['symbol'].str.upper(),
                 self.mapping_df['industry']
@@ -61,11 +72,12 @@ class IndustryMapper:
 
     def get_available_industries(self) -> List[str]:
         """Get list of all available industries in the database."""
-        return sorted(self.mapping_df['industry'].unique())
+        return self.available_industries
 
     def get_database_stats(self) -> Dict[str, int]:
         """Get statistics about the mapping database."""
         return {
             'total_symbols': len(self.mapping_df),
-            'total_industries': len(self.get_available_industries())
+            'total_industries': len(self.available_industries),
+            'mapped_industries': len(self.mapping_df['industry'].unique())
         }

@@ -1,11 +1,21 @@
 symbol,industry
-AAPL,Technology
-MSFT,Technology
-GOOGL,Technology
-AMZN,ConsumerCyclical
-META,Technology
-TSLA,ConsumerCyclical
-JPM,FinancialServices
-V,FinancialServices
-JNJ,Healthcare
-WMT,ConsumerDefensive
+AAPL,Computer-Networking
+MSFT,Software Products
+GOOGL,E- Commerce
+AMZN,E- Commerce
+META,Software Services
+TSLA,Auto Manufacturers
+JPM,Private Banks
+V,Financial Services-Specialty
+JNJ,Medical-EthicalDrugs
+WMT,Retail-SuperMiniMkts
+NVDA,Computer Hardware
+AMD,Computer Hardware
+INTC,Computer Hardware
+CSCO,Computer-Networking
+ORCL,Software Enterprise
+IBM,Software Services
+ADBE,Software Products
+CRM,Software Enterprise
+NFLX,Broadcasting & Entertainment
+PYPL,Finance & Investment
