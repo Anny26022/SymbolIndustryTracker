@@ -110,16 +110,28 @@ def main():
             with col2:
                 st.subheader("TradingView Format")
                 if mapped_symbols:
-                    formatted_output = mapper.format_tv_output(mapped_symbols)
+                    # Add option to choose copy format
+                    copy_format = st.radio(
+                        "Copy format:",
+                        ["With industry categorization", "Flat list of symbols only"],
+                        horizontal=True
+                    )
+                    
+                    # Get formatted outputs
+                    categorized_output = mapper.format_tv_output(mapped_symbols)
+                    flat_output = mapper.format_flat_output(mapped_symbols)
+                    
+                    # Display selected format
+                    selected_output = categorized_output if copy_format == "With industry categorization" else flat_output
                     
                     # Display the code directly for visibility
-                    st.code(formatted_output, language="text")
+                    st.code(selected_output, language="text")
                     
                     # Create a non-interactive display with copy button
                     st.markdown(
                         f"""
                         <div style="position: relative;">
-                            <pre style="background-color: #f0f2f6; padding: 10px; border-radius: 5px; white-space: pre-wrap; overflow-x: auto;">{formatted_output}</pre>
+                            <pre style="background-color: #f0f2f6; padding: 10px; border-radius: 5px; white-space: pre-wrap; overflow-x: auto;">{selected_output}</pre>
                             <button id="copyButton" style="position: absolute; top: 10px; right: 10px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; padding: 6px 12px; cursor: pointer;">
                                 📋
                             </button>
@@ -127,7 +139,7 @@ def main():
                         <script>
                             const copyButton = document.getElementById('copyButton');
                             copyButton.addEventListener('click', function(e) {{
-                                const text = `{formatted_output}`;
+                                const text = `{selected_output}`;
                                 navigator.clipboard.writeText(text)
                                     .then(() => {{
                                         // Visual feedback without page refresh

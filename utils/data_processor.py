@@ -95,6 +95,12 @@ class IndustryMapper:
             formatted_lines.append(formatted_line)
 
         return ",".join(formatted_lines)
+        
+    def format_flat_output(self, mapped_symbols: Dict[str, str]) -> str:
+        """Format the output as a flat list of symbols without industry grouping."""
+        # Just list all symbols with NSE: prefix
+        nse_symbols = [f"NSE:{symbol}" for symbol in sorted(mapped_symbols.keys())]
+        return ",".join(nse_symbols)
 
     def get_available_industries(self) -> List[str]:
         """Get list of all available industries in the database."""
