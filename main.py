@@ -96,10 +96,8 @@ def main():
                 st.subheader("TradingView Format")
                 if mapped_symbols:
                     formatted_output = mapper.format_tv_output(mapped_symbols)
-                    st.code(formatted_output, language="text")
-
+                    
                     # Copy button - using Streamlit's built-in clipboard functionality
-                    st.code(formatted_output, language="text")
                     st.text_area(
                         "Copy from here if button doesn't work:",
                         formatted_output,
