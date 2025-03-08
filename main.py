@@ -110,23 +110,15 @@ def main():
             with col2:
                 st.subheader("TradingView Format")
                 if mapped_symbols:
-                    # Initialize session state for format selection if not exists
-                    if 'format_selection' not in st.session_state:
-                        st.session_state['format_selection'] = "With industry categorization"
-                        
-                    # Simplified radio button with session state
+                    # Simplify radio button for format selection
                     format_options = ["With industry categorization", "Flat list of symbols only"]
                     copy_format = st.radio(
                         "Copy format:",
                         format_options,
-                        index=format_options.index(st.session_state['format_selection']),
+                        index=0,
                         key="format_selection",
-                        horizontal=True,
-                        on_change=lambda: None  # Empty callback to prevent full rerun
+                        horizontal=True
                     )
-                    
-                    # Save selected format in session state
-                    st.session_state['format_selection'] = copy_format
                     
                     # Get formatted outputs based on the current selection
                     categorized_output = mapper.format_tv_output(mapped_symbols)
@@ -138,20 +130,38 @@ def main():
                     # Display the code directly for visibility
                     st.code(selected_output, language="text")
                     
-                    # Use Streamlit's built-in copy functionality instead of custom JS
-                    st.code(selected_output, language="text")
-                    
-                    # Add a regular Streamlit button for copy functionality
-                    if st.button("📋 Copy to Clipboard", key=f"copy_{copy_format}"):
-                        # Use Streamlit's clipboard utilities
-                        st.write("✅ Copied to clipboard!")
-                        st.toast("Symbols copied to clipboard successfully!", icon="✅")
-                        # Use Streamlit experimental set clipboard
-                        st.experimental_set_query_params(clipboard=selected_output)
-                        
-                        # Also provide the text in a "hidden" expander that can be copy-pasted directly
-                        with st.expander("📋 Copy manually if button doesn't work", expanded=False):
-                            st.text_area("", value=selected_output, height=100, label_visibility="collapsed")
+                    # Create a non-interactive display with copy button
+                    st.markdown(
+                        f"""
+                        <div style="position: relative;">
+                            <pre style="background-color: #f0f2f6; padding: 10px; border-radius: 5px; white-space: pre-wrap; overflow-x: auto;">{selected_output}</pre>
+                            <button id="copyButton" style="position: absolute; top: 10px; right: 10px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; padding: 6px 12px; cursor: pointer;">
+                                📋
+                            </button>
+                        </div>
+                        <script>
+                            const copyButton = document.getElementById('copyButton');
+                            copyButton.addEventListener('click', function(e) {{
+                                const text = `{selected_output}`;
+                                navigator.clipboard.writeText(text)
+                                    .then(() => {{
+                                        // Visual feedback without page refresh
+                                        this.textContent = "✓";
+                                        setTimeout(() => {{
+                                            this.textContent = "📋";
+                                        }}, 2000);
+                                    }})
+                                    .catch(err => console.error('Copy failed:', err));
+                                    
+                                // Prevent default button behavior
+                                e.preventDefault();
+                                e.stopPropagation();
+                                return false;
+                            }});
+                        </script>
+                        """,
+                        unsafe_allow_html=True
+                    )
 
             # Display fundamentals if option is selected
             if show_fundamentals and mapped_symbols:
